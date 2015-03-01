@@ -1,0 +1,31 @@
+.col-name{ 
+    width:15%;
+    border: 1px solid black;
+}
+
+.col-text{
+    width:75%;
+    border: 1px solid black;
+}
+
+.col-button{
+    width:5%;
+    border: 1px solid black;
+}
+
+.table{
+    width: 100%;
+    table-layout: fixed;
+}
+
+.my-table{
+    margin-top: 10px;
+    width: 100%;
+    table-layout: fixed;
+}
+
+.scrollclass{
+    overflow-y: scroll;
+    overflow-x: auto;
+    height: 350px;
+}
