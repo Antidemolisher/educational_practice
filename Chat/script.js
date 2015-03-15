@@ -2,6 +2,8 @@ var nickname = "";
 var chosenMessage = null;
 var toEdit = false;
 
+var messageHistory = [];
+
 function run() {
     var messageContainer = document.getElementById('input-btn');
     messageContainer.addEventListener('click', onAddButtonClick);
@@ -14,6 +16,33 @@ function run() {
     
     var deleteButton = document.getElementById("deleteButton");
     deleteButton.addEventListener('click', onDeleteButtonClick);
+    
+    nickname = getNickFromStorage() || "";
+    var nickText = document.getElementById('nickname');
+    nickText.value = nickname;
+    
+    var allMessages = getMessageHistory();
+    if(allMessages != null)
+        rebuildMessageHistory(allMessages);
+}
+
+var uniqueId = function() {
+	var date = Date.now();
+	var random = Math.random() * Math.random();
+	return Math.floor(date * random).toString();
+};
+
+var theMessage = function(nick, text) {
+	return {
+		username: nick,
+		messageText: text,
+		id: uniqueId()
+	};
+};
+
+function rebuildMessageHistory(allMessages){
+    for(var i = 0; i < allMessages.length; i++)
+        addToTable(allMessages[i]);
 }
 
 function onAddButtonClick() {
@@ -28,7 +57,8 @@ function onAddButtonClick() {
     }
     else{
         var messageText = document.getElementById('message');
-        addToTable(messageText.value);
+        var message = theMessage(nickname,messageText.value);
+        addToTable(message);
         messageText.value = " ";
     }
 }
@@ -36,6 +66,7 @@ function onAddButtonClick() {
 function onNickButtonClick(){
     var nickText = document.getElementById('nickname');
     nickname = nickText.value;
+    storeNickname();
 }
 
 function onEditButtonClick(){
@@ -76,33 +107,68 @@ function onMessageClick(e){
     }
 }
 
-function addToTable(value) {
-    if (!value) {
-        return;
-    }
+function addToTable(message) {
     while (nickname.length === 0) {
         nickname = prompt("Enter nickname", '');
+        storeNickname();
         var nickText = document.getElementById('nickname');
         nickText.value = nickname;
     }
-    var item = createMessage(value);
+    messageHistory.push(message);
+    var item = createMessage(message);
     item.addEventListener('click', onMessageClick);
     var items = document.getElementById('messageTable');
     items.appendChild(item);
+    storeMessageHistory(messageHistory);
 }
 
-function createMessage(text) {
+function createMessage(message) {
     var trItem = document.createElement('tr');
     var nickItem = document.createElement('td');
     var messageItem = document.createElement('td');
     
     nickItem.setAttribute('class', 'col-name');
-    nickItem.appendChild(document.createTextNode(nickname));
+    nickItem.appendChild(document.createTextNode(message.username));
     
     messageItem.setAttribute('class','col-text');
-    messageItem.appendChild(document.createTextNode(text));
+    messageItem.appendChild(document.createTextNode(message.messageText));
     
+    trItem.setAttribute("message-id", message.id);
     trItem.appendChild(nickItem);
     trItem.appendChild(messageItem);
     return trItem;
+}
+
+function storeMessageHistory(history){
+    if(typeof(Storage) == "undefined") {
+		alert('localStorage is not accessible');
+		return;
+	}
+    localStorage.setItem("messageHistory", JSON.stringify(history));
+}
+    
+function getMessageHistory(){
+    if(typeof(Storage) == "undefined") {
+		alert('localStorage is not accessible');
+		return;
+	}
+    var item = localStorage.getItem("messageHistory");
+    return item && JSON.parse(item);
+}
+    
+function storeNickname(){
+    if(typeof(Storage) == "undefined") {
+		alert('localStorage is not accessible');
+		return;
+	}
+    localStorage.setItem("nickname", nickname);
+}
+
+function getNickFromStorage(){
+    if(typeof(Storage) == "undefined") {
+		alert('localStorage is not accessible');
+		return;
+	}
+    var word = localStorage.getItem("nickname");
+    return word;
 }
