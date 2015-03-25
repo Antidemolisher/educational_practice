@@ -23,6 +23,14 @@
     height: 400px;
 }
 
-.clickedMessage { 
+.clickedMessage{ 
     background-color: lightgreen; 
+}
+
+.editedMessage{
+    background-color: yellow;
+}
+
+.deletedMessage{
+    background-color: red;
 }
