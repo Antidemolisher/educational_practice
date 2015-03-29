@@ -1,0 +1,14 @@
+GET http://localhost:999/chat?token=TK11EN HTTP/1.1
+Host: localhost:999
+Connection: keep-alive
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8
+User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/43.0.2327.5 Safari/537.36
+Accept-Encoding: gzip, deflate, sdch
+Accept-Language: ru-RU,ru;q=0.8,en-US;q=0.6,en;q=0.4
+
+
+HTTP/1.1 200 OK
+Date: Tue, 17 Mar 2015 12:23:32 GMT
+Content-length: 92
+
+{"messages":["ojij","jhk","sdfsdf","kjhsfk","jvh","jhjv","kjg","b","jhjv"],"token":"TN83EN"}
