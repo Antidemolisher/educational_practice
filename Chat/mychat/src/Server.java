@@ -52,6 +52,8 @@ public class Server implements HttpHandler {
         else if("DELETE".equals(httpExchange.getRequestMethod())){
             doDelete(httpExchange);
         }
+        else if("OPTIONS".equals(httpExchange.getRequestMethod()))
+            response = "";
         else {
             response = "Unsupported http method: " + httpExchange.getRequestMethod();
         }

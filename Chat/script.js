@@ -4,6 +4,11 @@ var toEdit = false;
 
 var messageHistory = [];
 
+var appState = {
+    mainUrl: 'http://localhost:999/chat',
+    token: 'TE11EN'
+};
+
 function run() {
     var messageContainer = document.getElementById('input-btn');
     messageContainer.addEventListener('click', onAddButtonClick);
@@ -204,14 +209,29 @@ function storeMessageHistory(history){
 }
     
 function getMessageHistory(){
-    if(typeof(Storage) == "undefined") {
-		alert('localStorage is not accessible');
-		return;
-	}
-    var item = localStorage.getItem("messageHistory");
-    return item && JSON.parse(item);
+    var url = appState.mainUrl + '?token=' + appState.token;
+    get(url, function(responseText){
+        console.assert(responseText != null);
+        var response = JSON.parse(responseText).message;
+        rebuildMessageHistory(response);
+        
+        continueWith && continueWith();
+    });
 }
-    
+
+function restoreMessages(continueWith) {
+    var url = appState.mainUrl + '?token=' + appState.token;
+
+    get(url, function (responseText) {
+        console.assert(responseText != null);
+        delegateEventServer();
+        var response = JSON.parse(responseText).messages;
+        createAllMessages(response);
+
+        continueWith && continueWith();
+    });
+}
+
 function storeNickname(){
     if(typeof(Storage) == "undefined") {
 		alert('localStorage is not accessible');
@@ -227,4 +247,48 @@ function getNickFromStorage(){
 	}
     var word = localStorage.getItem("nickname");
     return word;
+}
+
+function get(url, continueWith, continueWithError) {
+    ajax('GET', url, null, continueWith, continueWithError);
+}
+
+function ajax(method, url, data, continueWith, continueWithError) {
+    var xhr = new XMLHttpRequest();
+
+    continueWithError = continueWithError || defaultErrorHandler;
+    xhr.open(method || 'GET', url, true);
+
+    xhr.onload = function () {
+        if (xhr.readyState !== 4)
+            return;
+
+        if (xhr.status != 200) {
+            continueWithError('Error on the server side, response ' + xhr.status);
+            return;
+        }
+
+        if (isError(xhr.responseText)) {
+            continueWithError('Error on the server side, response ' + xhr.responseText);
+            return;
+        }
+
+        continueWith(xhr.responseText);
+    };
+
+    xhr.ontimeout = function () {
+        continueWithError('Server timed out !');
+    }
+
+    xhr.onerror = function (e) {
+        var errMsg = 'Server connection error !\n' +
+    	'\n' +
+    	'Check if \n' +
+    	'- server is active\n' +
+    	'- server sends header "Access-Control-Allow-Origin:*"';
+
+        continueWithError(errMsg);
+    };
+
+    xhr.send(data);
 }
