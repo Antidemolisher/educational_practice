@@ -41,7 +41,7 @@ var theMessage = function(nick, text, stat) {
 	return {
 		username: nick,
 		messageText: text,
-		id: uniqueId(),
+		id: 1,
         status: stat
 	};
 };
@@ -68,7 +68,8 @@ function onAddButtonClick() {
         chosenMessage.classList.remove('clickedMessage');
         chosenMessage = null;
         toEdit = false;
-        storeMessageHistory(messageHistory);
+        storeMessageHistory(messageText,function(){
+        });
         return;
     }
     else{
@@ -176,7 +177,7 @@ function addToTable(message) {
     item.addEventListener('click', onMessageClick);
     var items = document.getElementById('messageTable');
     items.appendChild(item);
-    storeMessageHistory(messageHistory);
+    storeMessageHistory(message);
 }
 
 function createMessage(message) {
@@ -200,19 +201,17 @@ function createMessage(message) {
     return trItem;
 }
 
-function storeMessageHistory(history){
-    if(typeof(Storage) == "undefined") {
-		alert('localStorage is not accessible');
-		return;
-	}
-    localStorage.setItem("messageHistory", JSON.stringify(history));
+function storeMessageHistory(sendMessage, continurWith){
+    post(appState.mainUrl, JSON.stringify(sendMessage), function () {
+        
+    });
 }
     
 function getMessageHistory(){
     var url = appState.mainUrl + '?token=' + appState.token;
     get(url, function(responseText){
         console.assert(responseText != null);
-        var response = JSON.parse(responseText).message;
+        var response = JSON.parse(responseText).messages;
         rebuildMessageHistory(response);
         
         continueWith && continueWith();
@@ -249,8 +248,30 @@ function getNickFromStorage(){
     return word;
 }
 
+function defaultErrorHandler(message)
+{
+    
+}
+
+function isError(text)
+{
+    if(text == "")
+        return false;
+    try {
+        var obj = JSON.parse(text);
+    } catch (ex) {
+        return true;
+    }
+
+    return !!obj.error;
+}
+
 function get(url, continueWith, continueWithError) {
     ajax('GET', url, null, continueWith, continueWithError);
+}
+
+function post(url, data, continueWith, continueWithError) {
+    ajax('POST', url, data, continueWith, continueWithError);
 }
 
 function ajax(method, url, data, continueWith, continueWithError) {

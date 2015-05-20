@@ -59,7 +59,7 @@ public class Message implements JSONAware {
         Message temp = new Message();
         temp.username = (String)o.get("username");
         temp.messageText = (String)o.get("messageText");
-        temp.ID = Integer.parseInt(o.get("ID").toString());
+        temp.ID = Integer.parseInt(o.get("id").toString());
         temp.status = Integer.parseInt(o.get("status").toString());
         return temp;
     }

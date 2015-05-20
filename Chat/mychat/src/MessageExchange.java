@@ -32,7 +32,8 @@ public class MessageExchange {
     }
 
     public Message getClientMessage(InputStream inputStream) throws ParseException {
-        return Message.parse((JSONObject) getJSONObject(inputStreamToString(inputStream)).get("message"));
+        JSONObject json = getJSONObject(inputStreamToString(inputStream));
+        return Message.parse(json);
     }
 
     public JSONObject getJSONObject(String json) throws ParseException {
