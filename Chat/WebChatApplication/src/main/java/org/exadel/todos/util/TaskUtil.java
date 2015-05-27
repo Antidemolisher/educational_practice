@@ -1,18 +1,18 @@
 package org.exadel.todos.util;
 
-import org.exadel.todos.model.Task;
+import org.exadel.todos.model.Message;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 public final class TaskUtil {
 	public static final String TOKEN = "token";
-	public static final String TASKS = "tasks";
+	public static final String MESSAGES = "messages";
 	private static final String TN = "TN";
 	private static final String EN = "EN";
 	private static final String ID = "id";
-	private static final String DESCRIPTION = "description";
-	private static final String DONE = "done";
+	private static final String TEXT = "messageText";
+	private static final String USERNAME = "username";
 
 	private TaskUtil() {
 	}
@@ -31,13 +31,13 @@ public final class TaskUtil {
 		return (JSONObject) parser.parse(data.trim());
 	}
 
-	public static Task jsonToTask(JSONObject json) {
+	public static Message jsonToMessage(JSONObject json) {
 		Object id = json.get(ID);
-		Object description = json.get(DESCRIPTION);
-		Object done = json.get(DONE);
+		Object text = json.get(TEXT);
+		Object username = json.get(USERNAME);
 
-		if (id != null && description != null && done != null) {
-			return new Task((String) id, (String) description, (Boolean) done);
+		if (id != null && text != null && username != null) {
+			return new Message((String) id, (String) username, (String) text);
 		}
 		return null;
 	}

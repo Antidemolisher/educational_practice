@@ -1,10 +1,10 @@
 package org.exadel.todos.controller;
 
-import static org.exadel.todos.util.TaskUtil.TASKS;
+import static org.exadel.todos.util.TaskUtil.MESSAGES;
 import static org.exadel.todos.util.TaskUtil.TOKEN;
 import static org.exadel.todos.util.TaskUtil.getIndex;
 import static org.exadel.todos.util.TaskUtil.getToken;
-import static org.exadel.todos.util.TaskUtil.jsonToTask;
+import static org.exadel.todos.util.TaskUtil.jsonToMessage;
 import static org.exadel.todos.util.TaskUtil.stringToJson;
 
 import java.io.IOException;
@@ -20,7 +20,7 @@ import javax.xml.transform.TransformerException;
 import javax.xml.xpath.XPathExpressionException;
 
 import org.apache.log4j.Logger;
-import org.exadel.todos.model.Task;
+import org.exadel.todos.model.Message;
 import org.exadel.todos.storage.xml.XMLHistoryUtil;
 import org.exadel.todos.util.ServletUtil;
 import org.json.simple.JSONObject;
@@ -51,12 +51,12 @@ public class TaskServlet extends HttpServlet {
 			if (token != null && !"".equals(token)) {
 				int index = getIndex(token);
 				logger.info("Index " + index);
-				String tasks;
-				tasks = formResponse(index);
+				String messages;
+				messages = formResponse(index);
 				response.setCharacterEncoding(ServletUtil.UTF_8);
 				response.setContentType(ServletUtil.APPLICATION_JSON);
 				PrintWriter out = response.getWriter();
-				out.print(tasks);
+				out.print(messages);
 				out.flush();
 			} else {
 				response.sendError(HttpServletResponse.SC_BAD_REQUEST, "'token' parameter needed");
@@ -73,8 +73,8 @@ public class TaskServlet extends HttpServlet {
 		logger.info(data);
 		try {
 			JSONObject json = stringToJson(data);
-			Task task = jsonToTask(json);
-			XMLHistoryUtil.addData(task);
+			Message message = jsonToMessage(json);
+			XMLHistoryUtil.addData(message);
 			response.setStatus(HttpServletResponse.SC_OK);
 		} catch (ParseException | ParserConfigurationException | SAXException | TransformerException e) {
 			logger.error(e);
@@ -82,7 +82,7 @@ public class TaskServlet extends HttpServlet {
 		}
 	}
 
-	@Override
+	/*@Override
 	protected void doPut(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		logger.info("doPut");
 		String data = ServletUtil.getMessageBody(request);
@@ -95,12 +95,12 @@ public class TaskServlet extends HttpServlet {
 			logger.error(e);
 			response.sendError(HttpServletResponse.SC_BAD_REQUEST);
 		}
-	}
+	}*/
 
 	@SuppressWarnings("unchecked")
 	private String formResponse(int index) throws SAXException, IOException, ParserConfigurationException {
 		JSONObject jsonObject = new JSONObject();
-		jsonObject.put(TASKS, XMLHistoryUtil.getSubTasksByIndex(index));
+		jsonObject.put(MESSAGES, XMLHistoryUtil.getSubMessagesByIndex(index));
 		jsonObject.put(TOKEN, getToken(XMLHistoryUtil.getStorageSize()));
 		return jsonObject.toJSONString();
 	}
@@ -113,14 +113,10 @@ public class TaskServlet extends HttpServlet {
 	}
 	
 	private void addStubData() throws ParserConfigurationException, TransformerException {
-		Task[] stubTasks = { 
-				new Task("1", "Create markup", true), 
-				new Task("2", "Learn JavaScript", true),
-				new Task("3", "Learn Java Servlet Technology", false), 
-				new Task("4", "Write The Chat !", false), };
-		for (Task task : stubTasks) {
+		Message[] stubMessages = {};
+		for (Message message : stubMessages) {
 			try {
-				XMLHistoryUtil.addData(task);
+				XMLHistoryUtil.addData(message);
 			} catch (ParserConfigurationException | SAXException | IOException | TransformerException e) {
 				logger.error(e);
 			}

@@ -23,11 +23,13 @@ DROP TABLE IF EXISTS `messages`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `messages` (
-  `id` varchar(30) NOT NULL DEFAULT '',
-  `text` varchar(1000) DEFAULT NULL,
+  `id` int(11) NOT NULL DEFAULT '0',
+  `text` varchar(1024) DEFAULT NULL,
   `date` datetime DEFAULT NULL,
-  `users_id` varchar(30) DEFAULT NULL,
-  PRIMARY KEY (`id`)
+  `user_id` varchar(40) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `user_id` (`user_id`),
+  CONSTRAINT `messages_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -37,7 +39,7 @@ CREATE TABLE `messages` (
 
 LOCK TABLES `messages` WRITE;
 /*!40000 ALTER TABLE `messages` DISABLE KEYS */;
-INSERT INTO `messages` VALUES ('1','hello','2015-05-19 11:13:40','2'),('10','hi','2015-05-19 11:22:20','6'),('2','hello','2015-05-19 11:14:34','1'),('3','hi','2015-05-19 11:15:25','4'),('4','hi','2015-05-19 11:16:05','3'),('5','hi','2015-05-19 11:17:25','5'),('6','hi','2015-05-19 11:18:05','10'),('7','hello','2015-05-19 11:18:42','9'),('8','hi','2015-05-19 11:19:22','8'),('9','hello','2015-05-19 11:21:48','7');
+INSERT INTO `messages` VALUES (1,'1','2015-05-26 15:24:50','1'),(2,'hello, world','2015-05-26 15:25:18','9'),(3,'hi','2015-05-26 15:25:55','9'),(4,'hello, how are you?','2015-05-26 15:26:22','9'),(5,'hello, i\'m fine','2015-05-26 15:26:55','7'),(6,'very nice','2015-05-26 15:27:24','9'),(7,'hello, guys','2015-05-26 15:27:51','8'),(8,'nice day','2015-05-26 15:28:24','4'),(9,'it\'s sunny today','2015-05-26 15:28:49','2'),(10,'yeah','2015-05-26 15:29:06','9');
 /*!40000 ALTER TABLE `messages` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -74,4 +76,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2015-05-19 11:24:33
+-- Dump completed on 2015-05-26 15:36:15

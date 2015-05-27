@@ -21,7 +21,7 @@ import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
-import org.exadel.todos.model.Task;
+import org.exadel.todos.model.Message;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -30,11 +30,11 @@ import org.xml.sax.SAXException;
 
 public final class XMLHistoryUtil {
 	private static final String STORAGE_LOCATION = System.getProperty("user.home") +  File.separator + "history.xml"; // history.xml will be located in the home directory
-	private static final String TASKS = "tasks";
-	private static final String TASK = "task";
+	private static final String MESSAGES = "messages";
+	private static final String MESSAGE = "message";
 	private static final String ID = "id";
-	private static final String DESCRIPTION = "description";
-	private static final String DONE = "done";
+	private static final String TEXT = "text";
+	private static final String USERNAME = "username";
 
 	private XMLHistoryUtil() {
 	}
@@ -44,7 +44,7 @@ public final class XMLHistoryUtil {
 		DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
 
 		Document doc = docBuilder.newDocument();
-		Element rootElement = doc.createElement(TASKS);
+		Element rootElement = doc.createElement(MESSAGES);
 		doc.appendChild(rootElement);
 
 		Transformer transformer = getTransformer();
@@ -54,7 +54,7 @@ public final class XMLHistoryUtil {
 		transformer.transform(source, result);
 	}
 
-	public static synchronized void addData(Task task) throws ParserConfigurationException, SAXException, IOException, TransformerException {
+	public static synchronized void addData(Message message) throws ParserConfigurationException, SAXException, IOException, TransformerException {
 		DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
 		DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
 		Document document = documentBuilder.parse(STORAGE_LOCATION);
@@ -62,18 +62,18 @@ public final class XMLHistoryUtil {
 		
 		Element root = document.getDocumentElement(); // Root <tasks> element
 
-		Element taskElement = document.createElement(TASK);
-		root.appendChild(taskElement);
+		Element messageElement = document.createElement(MESSAGE);
+		root.appendChild(messageElement);
 
-		taskElement.setAttribute(ID, task.getId());
+		messageElement.setAttribute(ID, message.getID());
 
-		Element description = document.createElement(DESCRIPTION);
-		description.appendChild(document.createTextNode(task.getDescription()));
-		taskElement.appendChild(description);
+        Element username = document.createElement(USERNAME);
+        username.appendChild(document.createTextNode(message.getUsername()));
+        messageElement.appendChild(username);
 
-		Element done = document.createElement(DONE);
-		done.appendChild(document.createTextNode(Boolean.toString(task.isDone())));
-		taskElement.appendChild(done);
+        Element text = document.createElement(TEXT);
+        text.appendChild(document.createTextNode(message.getMessageText()));
+        messageElement.appendChild(text);
 
 		DOMSource source = new DOMSource(document);
 
@@ -83,7 +83,7 @@ public final class XMLHistoryUtil {
 		transformer.transform(source, result);
 	}
 
-	public static synchronized void updateData(Task task) throws ParserConfigurationException, SAXException, IOException, TransformerException, XPathExpressionException {
+	/*public static synchronized void updateData(Task task) throws ParserConfigurationException, SAXException, IOException, TransformerException, XPathExpressionException {
 		DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
 		DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
 		Document document = documentBuilder.parse(STORAGE_LOCATION);
@@ -116,33 +116,33 @@ public final class XMLHistoryUtil {
 		} else {
 			throw new NullPointerException();
 		}
-	}
+	}*/
 
 	public static synchronized boolean doesStorageExist() {
 		File file = new File(STORAGE_LOCATION);
 		return file.exists();
 	}
 
-	public static synchronized List<Task> getTasks() throws SAXException, IOException, ParserConfigurationException {
-		return getSubTasksByIndex(0); // Return all tasks from history 
+	public static synchronized List<Message> getMessages() throws SAXException, IOException, ParserConfigurationException {
+		return getSubMessagesByIndex(0); // Return all tasks from history
 	}
 	
-	public static synchronized List<Task> getSubTasksByIndex(int index) throws ParserConfigurationException, SAXException, IOException {
-		List<Task> tasks = new ArrayList<>();
+	public static synchronized List<Message> getSubMessagesByIndex(int index) throws ParserConfigurationException, SAXException, IOException {
+		List<Message> messages = new ArrayList<Message>();
 		DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
 		DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
 		Document document = documentBuilder.parse(STORAGE_LOCATION);
 		document.getDocumentElement().normalize();
 		Element root = document.getDocumentElement(); // Root <tasks> element
-		NodeList taskList = root.getElementsByTagName(TASK);
-		for (int i = index; i < taskList.getLength(); i++) {
-			Element taskElement = (Element) taskList.item(i);
-			String id = taskElement.getAttribute(ID);
-			String description = taskElement.getElementsByTagName(DESCRIPTION).item(0).getTextContent();
-			boolean done = Boolean.valueOf(taskElement.getElementsByTagName(DONE).item(0).getTextContent());
-			tasks.add(new Task(id, description, done));
+		NodeList messageList = root.getElementsByTagName(MESSAGE);
+		for (int i = index; i < messageList.getLength(); i++) {
+			Element messageElement = (Element) messageList.item(i);
+			String id = messageElement.getAttribute(ID);
+			String text = messageElement.getElementsByTagName(TEXT).item(0).getTextContent();
+			String username = messageElement.getElementsByTagName(USERNAME).item(0).getTextContent();
+			messages.add(new Message(id,username,text));
 		}
-		return tasks;
+		return messages;
 	}
 
 	public static synchronized int getStorageSize() throws SAXException, IOException, ParserConfigurationException {
@@ -151,12 +151,12 @@ public final class XMLHistoryUtil {
 		Document document = documentBuilder.parse(STORAGE_LOCATION);
 		document.getDocumentElement().normalize();
 		Element root = document.getDocumentElement(); // Root <tasks> element
-		return root.getElementsByTagName(TASK).getLength();
+		return root.getElementsByTagName(MESSAGE).getLength();
 	}
 
 	private static Node getNodeById(Document doc, String id) throws XPathExpressionException {
 		XPath xpath = XPathFactory.newInstance().newXPath();
-		XPathExpression expr = xpath.compile("//" + TASK + "[@id='" + id + "']");
+		XPathExpression expr = xpath.compile("//" + MESSAGE + "[@id='" + id + "']");
 		return (Node) expr.evaluate(doc, XPathConstants.NODE);
 	}
 

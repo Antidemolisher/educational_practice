@@ -1,0 +1,36 @@
+.col-name{ 
+    width:20%;
+}
+
+.col-text{
+    width:80%;
+}
+
+.table{
+    width: 100%;
+    table-layout: fixed;
+}
+
+.my-table{
+    margin-top: 10px;
+    width: 100%;
+    table-layout: fixed;
+}
+
+.scrollclass{
+    overflow-y: scroll;
+    overflow-x: auto;
+    height: 400px;
+}
+
+.clickedMessage{ 
+    background-color: lightgreen; 
+}
+
+.editedMessage{
+    background-color: yellow;
+}
+
+.deletedMessage{
+    background-color: red;
+}

@@ -5,7 +5,7 @@ var toEdit = false;
 var messageHistory = [];
 
 var appState = {
-    mainUrl: 'http://localhost:999/chat',
+    mainUrl: 'http://localhost:8080/chat',
     token: 'TE11EN'
 };
 
