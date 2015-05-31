@@ -5,8 +5,8 @@ var toEdit = false;
 var messageHistory = [];
 
 var appState = {
-    mainUrl: 'http://localhost:8080/chat',
-    token: 'TE11EN'
+    mainUrl: "chat",
+    token: '0'
 };
 
 function run() {
@@ -26,22 +26,15 @@ function run() {
     var nickText = document.getElementById('nickname');
     nickText.value = nickname;
     
-    var allMessages = getMessageHistory();
-    if(allMessages != null)
-        rebuildMessageHistory(allMessages);
+    getMessageHistory();
+    window.setInterval(getMessageHistory,500);
 }
-
-var uniqueId = function() {
-	var date = Date.now();
-	var random = Math.random() * Math.random();
-	return Math.floor(date * random).toString();
-};
 
 var theMessage = function(nick, text, stat) {
 	return {
 		username: nick,
 		messageText: text,
-		id: 1,
+		id: "1",
         status: stat
 	};
 };
@@ -83,7 +76,7 @@ function onAddButtonClick() {
         if(messageText.value == "")
             return;
         var message = theMessage(nickname,messageText.value,0);
-        addToTable(message);
+        storeMessageHistory(message);
         messageText.value = " ";
     }
 }
@@ -177,7 +170,6 @@ function addToTable(message) {
     item.addEventListener('click', onMessageClick);
     var items = document.getElementById('messageTable');
     items.appendChild(item);
-    storeMessageHistory(message);
 }
 
 function createMessage(message) {
@@ -211,21 +203,9 @@ function getMessageHistory(){
     var url = appState.mainUrl + '?token=' + appState.token;
     get(url, function(responseText){
         console.assert(responseText != null);
-        var response = JSON.parse(responseText).messages;
-        rebuildMessageHistory(response);
-        
-        continueWith && continueWith();
-    });
-}
-
-function restoreMessages(continueWith) {
-    var url = appState.mainUrl + '?token=' + appState.token;
-
-    get(url, function (responseText) {
-        console.assert(responseText != null);
-        delegateEventServer();
-        var response = JSON.parse(responseText).messages;
-        createAllMessages(response);
+        var response = JSON.parse(responseText);
+        appState.token = response.token;
+        rebuildMessageHistory(response.messages);
 
         continueWith && continueWith();
     });

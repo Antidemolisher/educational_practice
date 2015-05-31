@@ -1,6 +1,9 @@
 package org.exadel.todos.model;
 
-public class Message {
+import org.json.simple.JSONAware;
+import org.json.simple.JSONObject;
+
+public class Message implements JSONAware {
         private String username;
         private String messageText;
         private String ID;
@@ -38,5 +41,14 @@ public class Message {
     }
     public String getMessageText(){
         return messageText;
+    }
+
+    @Override
+    public String toJSONString() {
+        JSONObject obj = new JSONObject();
+        obj.put("id",ID);
+        obj.put("messageText",messageText);
+        obj.put("username",username);
+        return obj.toString();
     }
 }

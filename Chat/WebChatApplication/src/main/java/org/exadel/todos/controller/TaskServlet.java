@@ -27,7 +27,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.ParseException;
 import org.xml.sax.SAXException;
 
-@WebServlet("/todos")
+@WebServlet("/chat")
 public class TaskServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private static Logger logger = Logger.getLogger(TaskServlet.class.getName());
@@ -48,6 +48,9 @@ public class TaskServlet extends HttpServlet {
 		logger.info("Token " + token);
 
 		try {
+//            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "'token' parameter needed");
+//            if(getIndex(token) == 0)
+//                return;
 			if (token != null && !"".equals(token)) {
 				int index = getIndex(token);
 				logger.info("Index " + index);

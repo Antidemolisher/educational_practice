@@ -18,12 +18,11 @@ public final class TaskUtil {
 	}
 
 	public static String getToken(int index) {
-		Integer number = index * 8 + 11;
-		return TN + number + EN;
+        return String.valueOf(index);
 	}
 
 	public static int getIndex(String token) {
-		return (Integer.valueOf(token.substring(2, token.length() - 2)) - 11) / 8;
+		return Integer.valueOf(token);
 	}
 
 	public static JSONObject stringToJson(String data) throws ParseException {
